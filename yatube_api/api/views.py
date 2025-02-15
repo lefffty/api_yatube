@@ -69,6 +69,11 @@ class PostViewSet(GetPutPatchDeleteViewSet):
 
     def partial_update(self, request: HttpRequest, *args, **kwargs):
         post = self.get_queryset()
+        if post.author != request.user:
+            return Response(
+                data=request.data,
+                status=status.HTTP_403_FORBIDDEN,
+            )
         serializer = self.serializer_class(
             post,
             data=request.data,
@@ -78,12 +83,36 @@ class PostViewSet(GetPutPatchDeleteViewSet):
             serializer.save()
             return Response(
                 serializer.data,
-                status=status.HTTP_206_PARTIAL_CONTENT
+                status=status.HTTP_200_PARTIAL_CONTENT
             )
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_403_BAD_REQUEST)
 
     def update(self, request: HttpRequest, *args, **kwargs):
         post = self.get_queryset()
+        if post.author != request.user:
+            return Response(
+                data=request.data,
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        serializer = self.serializer_class(
+            post,
+            data=request.data,
+            partial=True,
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_202_ACCEPTED
+            )
+
+    def destroy(self, request: HttpRequest, *args, **kwargs):
+        post = self.get_queryset()
+        if post.author != request.user:
+            return Response(
+                data=request.data,
+                status=status.HTTP_403_FORBIDDEN,
+            )
         serializer = self.serializer_class(
             post,
             data=request.data,
