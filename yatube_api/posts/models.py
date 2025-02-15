@@ -40,7 +40,9 @@ class Comment(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='comments'
     )
-    text = models.TextField()
+    text = models.TextField(
+
+    )
     created = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True
     )

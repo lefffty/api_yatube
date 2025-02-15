@@ -37,6 +37,7 @@ class PostsViewSet(ModelViewSet):
             data=request.data,
         )
         if serializer.is_valid():
+            serializer.instance.author = request.user
             serializer.save()
             return Response(
                 serializer.data,
@@ -60,19 +61,27 @@ class GetPutPatchDeleteViewSet(
 class PostViewSet(GetPutPatchDeleteViewSet):
     serializer_class = PostSerializer
 
-    def get_queryset(self):
+    def perform_update(self, serializer):
+        if serializer.instance.author != self.request.user:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+    def perform_destroy(self, instance):
+        if instance.author != self.request.user:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+    def get_object(self):
         post_id = self.kwargs.get('post_id')
         post = Post.objects.get(
-            post_id=post_id,
+            pk=post_id,
         )
         return post
 
     def partial_update(self, request: HttpRequest, *args, **kwargs):
         post = self.get_queryset()
-        if post.author != request.user and request.user.is_authenticated:
-            return Response(
-                status=status.HTTP_403_FORBIDDEN,
-            )
         serializer = self.serializer_class(
             post,
             data=request.data,
@@ -88,11 +97,6 @@ class PostViewSet(GetPutPatchDeleteViewSet):
 
     def update(self, request: HttpRequest, *args, **kwargs):
         post = self.get_queryset()
-        if post.author != request.user and request.user.is_authenticated:
-            return Response(
-                data=request.data,
-                status=status.HTTP_403_FORBIDDEN,
-            )
         serializer = self.serializer_class(
             post,
             data=request.data,
@@ -107,11 +111,6 @@ class PostViewSet(GetPutPatchDeleteViewSet):
 
     def destroy(self, request: HttpRequest, *args, **kwargs):
         post = self.get_queryset()
-        if post.author != request.user and request.user.is_authenticated:
-            return Response(
-                data=request.data,
-                status=status.HTTP_403_FORBIDDEN,
-            )
         serializer = self.serializer_class(
             post,
             data=request.data,
@@ -139,20 +138,30 @@ class CommentsViewSet(ListCreateAPIView):
         return new_queryset
 
 
-class CommentViewSet(ViewSet):
-    def get_queryset(self):
+class CommentViewSet(GetPutPatchDeleteViewSet):
+    def get_object(self):
         post_id = self.kwargs.get('post_id')
-        comments = Comment.objects.filter(
-            post_id=post_id
-        )
         comment_id = self.kwargs.get('comment_id')
-        comment = comments.get(
-            comment_id=comment_id
+        comment = Comment.objects.filter(
+            pk=comment_id,
+            post_id=post_id,
         )
         return comment
 
+    def perform_update(self, serializer):
+        if self.request.user != serializer.instance.author:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+    def perform_destroy(self, instance):
+        if self.request.user != instance.author:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
     def retrieve(self, request: HttpRequest):
-        comment = self.get_queryset()
+        comment = self.get_object()
         serializer = CommentSerializer(
             comment
         )
