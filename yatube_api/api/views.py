@@ -2,7 +2,6 @@ from django.http import HttpRequest
 from rest_framework.viewsets import (
     ModelViewSet,
     ReadOnlyModelViewSet,
-    ViewSet,
     GenericViewSet,
 )
 from rest_framework.generics import (
