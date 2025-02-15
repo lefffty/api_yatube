@@ -69,7 +69,7 @@ class PostViewSet(GetPutPatchDeleteViewSet):
 
     def partial_update(self, request: HttpRequest, *args, **kwargs):
         post = self.get_queryset()
-        if post.author != request.user:
+        if post.author != request.user and request.user.is_authenticated:
             return Response(
                 data=request.data,
                 status=status.HTTP_403_FORBIDDEN,
@@ -89,7 +89,7 @@ class PostViewSet(GetPutPatchDeleteViewSet):
 
     def update(self, request: HttpRequest, *args, **kwargs):
         post = self.get_queryset()
-        if post.author != request.user:
+        if post.author != request.user and request.user.is_authenticated:
             return Response(
                 data=request.data,
                 status=status.HTTP_403_FORBIDDEN,
@@ -108,7 +108,7 @@ class PostViewSet(GetPutPatchDeleteViewSet):
 
     def destroy(self, request: HttpRequest, *args, **kwargs):
         post = self.get_queryset()
-        if post.author != request.user:
+        if post.author != request.user and request.user.is_authenticated:
             return Response(
                 data=request.data,
                 status=status.HTTP_403_FORBIDDEN,
