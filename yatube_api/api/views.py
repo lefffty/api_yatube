@@ -71,7 +71,6 @@ class PostViewSet(GetPutPatchDeleteViewSet):
         post = self.get_queryset()
         if post.author != request.user and request.user.is_authenticated:
             return Response(
-                data=request.data,
                 status=status.HTTP_403_FORBIDDEN,
             )
         serializer = self.serializer_class(

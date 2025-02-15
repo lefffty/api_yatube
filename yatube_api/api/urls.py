@@ -15,13 +15,13 @@ router = DefaultRouter()
 
 router.register('posts', PostsViewSet)
 router.register(
-    'posts/{post_id}/',
+    'posts/<int:post_id>/',
     PostViewSet,
     basename='post'
 )
 router.register('groups', GroupListCreateViewSet)
 router.register(
-    'posts/{post_id}/comments/{comment_id}/',
+    'posts/<int:post_id>/comments/<int:comment_id>/',
     CommentViewSet,
     basename='comment',
 )
@@ -29,7 +29,7 @@ router.register(
 urlpatterns = [
     path('api/v1/', include(router.urls)),
     path(
-        'api/v1/posts/{post_id}/comments/',
+        'api/v1/posts/<int:post_id>/comments/',
         CommentsViewSet.as_view(),
         name='comments'
     ),
