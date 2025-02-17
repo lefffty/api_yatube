@@ -48,6 +48,7 @@ def api_posts(request: HttpRequest) -> Response:
             data=request.data,
         )
         if serializer.is_valid() and request.user.is_authenticated:
+            serializer.validated_data['author'] = request.user
             serializer.save()
             return Response(
                 data=serializer.data,
