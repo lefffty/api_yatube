@@ -41,7 +41,7 @@ def api_posts(request: HttpRequest) -> Response:
         )
         return Response(
             data=serializer.data,
-            status=status.HTTP_201_CREATED,
+            status=status.HTTP_200_OK,
         )
     elif request.method == 'POST':
         serializer = PostSerializer(
@@ -74,6 +74,10 @@ def api_post_detail(request: HttpRequest, post_id) -> Response:
             status=status.HTTP_200_OK,
         )
     elif request.method == 'PATCH' or request.method == 'PUT':
+        if request.user != post.author:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+            )
         serializer = PostSerializer(
             post,
             data=request.data,
@@ -83,7 +87,7 @@ def api_post_detail(request: HttpRequest, post_id) -> Response:
             serializer.save()
             return Response(
                 data=serializer.data,
-                status=status.HTTP_206_PARTIAL_CONTENT,
+                status=status.HTTP_200_OK,
             )
         return Response(
             serializer.errors,
@@ -143,7 +147,7 @@ def api_comments(request: HttpRequest, post_id) -> Response:
             serializer.data,
             status=status.HTTP_200_OK,
         )
-    else:
+    elif request.method == 'POST':
         serializer = CommentSerializer(
             data=request.data,
         )
@@ -176,6 +180,10 @@ def api_comment_detail(request: HttpRequest, post_id, comment_id):
             status=status.HTTP_200_OK,
         )
     elif request.method == 'PUT' or request.method == 'PATCH':
+        if request.user != comment.author:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+            )
         serializer = CommentSerializer(
             comment,
             data=request.data,
@@ -185,7 +193,7 @@ def api_comment_detail(request: HttpRequest, post_id, comment_id):
             serializer.save()
             return Response(
                 data=serializer.data,
-                status=status.HTTP_206_PARTIAL_CONTENT,
+                status=status.HTTP_200_OK,
             )
         else:
             return Response(
