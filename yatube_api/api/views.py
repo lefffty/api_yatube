@@ -191,7 +191,7 @@ def api_comment_detail(request: HttpRequest, post_id, comment_id):
             partial=True,
         )
         if serializer.is_valid():
-            serializer.validated_data['author'] = request.user.username
+            serializer.validated_data['author'] = request.user
             serializer.save()
             return Response(
                 data=serializer.data,
