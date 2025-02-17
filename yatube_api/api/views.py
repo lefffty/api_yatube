@@ -41,7 +41,7 @@ def api_posts(request: HttpRequest) -> Response:
         )
         return Response(
             data=serializer.data,
-            status=status.HTTP_200_OK,
+            status=status.HTTP_201_OK,
         )
     elif request.method == 'POST':
         serializer = PostSerializer(
@@ -147,12 +147,13 @@ def api_comments(request: HttpRequest, post_id) -> Response:
             serializer.data,
             status=status.HTTP_200_OK,
         )
-    elif request.method == 'POST':
+    elif request.method == 'POST' and request.user.is_authenticated:
         serializer = CommentSerializer(
             data=request.data,
         )
         if serializer.is_valid():
             serializer.instance.post = post
+            serializer.instance.author = request.user
             serializer.save()
             return Response(
                 data=serializer.data,
@@ -190,6 +191,7 @@ def api_comment_detail(request: HttpRequest, post_id, comment_id):
             partial=True,
         )
         if serializer.is_valid():
+            serializer.instance.author = request.user
             serializer.save()
             return Response(
                 data=serializer.data,
