@@ -11,8 +11,6 @@ class GroupSerializer(serializers.ModelSerializer):
             'title',
             'slug',
             'description',
-            'post',
-            '',
         )
 
 
