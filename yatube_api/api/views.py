@@ -198,9 +198,6 @@ def api_comment_detail(request: HttpRequest, post_id, comment_id):
             comment,
             status=status.HTTP_204_NO_CONTENT,
         )
-
-
-
 # class PostsViewSet(ModelViewSet):
 #     queryset = Post.objects.all()
 #     serializer_class = PostSerializer
