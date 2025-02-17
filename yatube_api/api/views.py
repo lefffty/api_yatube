@@ -44,14 +44,10 @@ def api_posts(request: HttpRequest) -> Response:
             status=status.HTTP_200_OK,
         )
     elif request.method == 'POST':
-        if request.user.is_authenticated is False:
-            return Response(
-                status=status.HTTP_403_FORBIDDEN,
-            )
         serializer = PostSerializer(
             data=request.data,
         )
-        if serializer.is_valid():
+        if serializer.is_valid() and request.user.is_authenticated:
             serializer.save()
             return Response(
                 data=serializer.data,
