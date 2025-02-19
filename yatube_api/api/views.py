@@ -82,6 +82,10 @@ def api_post_detail(request: HttpRequest, post_id) -> Response:
             status=status.HTTP_400_BAD_REQUEST,
         )
     else:
+        if request.user != post.author:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+            )
         post.delete()
         return Response(
             status=status.HTTP_204_NO_CONTENT,
@@ -190,6 +194,10 @@ def api_comment_detail(request: HttpRequest, post_id, comment_id):
                 status=status.HTTP_400_BAD_REQUEST,
             )
     else:
+        if request.user != comment.author:
+            return Response(
+                status=status.HTTP_403_FORBIDDEN,
+            )
         comment.delete()
         return Response(
             status=status.HTTP_204_NO_CONTENT,
