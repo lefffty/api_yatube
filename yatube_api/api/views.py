@@ -84,7 +84,6 @@ def api_post_detail(request: HttpRequest, post_id) -> Response:
     else:
         post.delete()
         return Response(
-            data=post,
             status=status.HTTP_204_NO_CONTENT,
         )
 
@@ -193,6 +192,5 @@ def api_comment_detail(request: HttpRequest, post_id, comment_id):
     else:
         comment.delete()
         return Response(
-            comment,
             status=status.HTTP_204_NO_CONTENT,
         )
